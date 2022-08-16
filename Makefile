@@ -25,7 +25,9 @@ init-dev:
 	pip install -r requirements_test.txt
 
 pyinstaller: clean
-	pyinstaller --noconfirm --onefile --windowed -n smb3_eh_manip --uac-admin app.py
+	pyinstaller --noconfirm --onefile --console \
+		-n smb3_eh_manip --uac-admin \
+		app.py
 	cp -r data/ dist/
 	cp config.ini.sample dist/
 	cp config.ini dist/
