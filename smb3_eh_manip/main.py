@@ -1,6 +1,8 @@
 import logging
 import time
 from signal import signal, SIGINT
+import cProfile
+import pstats
 
 from pygrabber.dshow_graph import FilterGraph
 
@@ -36,17 +38,20 @@ def main():
     initialize_logging()
     LOGGER.info(f"Starting smb3 manip tool version {VERSION}")
     print_camera_info()
-    try:
-        controller = Controller()
-        last_tick_duration = -1
-        while controller is not None:
-            start_time = time.time()
-            controller.tick(last_tick_duration)
-            last_tick_duration = time.time() - start_time
-            LOGGER.debug(f"Took {last_tick_duration}s to tick")
-    except:
-        logging.exception("main handler exception")
-        raise
+    with cProfile.Profile() as pr:
+        try:
+            controller = Controller()
+            last_tick_duration = -1
+            while controller is not None:
+                start_time = time.time()
+                controller.tick(last_tick_duration)
+                last_tick_duration = time.time() - start_time
+                LOGGER.debug(f"Took {last_tick_duration}s to tick")
+        except:
+            logging.exception("main handler exception")
+            raise
+        pr.print_stats()
+        pr.dump_stats("stats.log")
 
 
 if __name__ == "__main__":
